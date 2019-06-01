@@ -7,6 +7,11 @@ import (
 )
 
 func main() {
-	ntpTime, _ := ntp.Time("ntp5.stratum2.ru")
-	fmt.Println(ntpTime.Format("15:04:05"))
+	ntpTime, err := ntp.Time("ntp5.stratum2.ru")
+
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(ntpTime.Format("15:04:05"))
+	}
 }
