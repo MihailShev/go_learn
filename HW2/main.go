@@ -10,22 +10,21 @@ import (
 type runeType int
 
 const (
-	symbol runeType = iota
-	count
-	escapeSymbol
-	escape
+	symbolType runeType = iota
+	countType
+	escapeSymbolType
+	escapeType
+	errorType
+	emptyType
 )
+
 const escapeRune rune = '\\'
 
-var input = []string{"a4bc2d5e", "abcd", `qwe\4\5`, `qwe\45`, `qwe\\5`}
-var output = []string{"aaaabccddddde", "abcd", `qwe45`, `qwe44444`, `qwe\\\\\`}
-
 func main() {
-	// fmt.Println("symbol 0 ->", defineRuneType('\\', '4'))
-	// fmt.Println("count 1 -> ", defineRuneType('a', '2'))
-	// fmt.Println("escapeSymbol 2 -> ", defineRuneType('\\', '\\'))
-	// fmt.Println("escape 3 -> ", defineRuneType('4', '\\'))
+	input := [6]string{"a4bc2d5e", "abcd", "45", `qwe\4\5`, `qwe\45`, `qwe\\5`}
+	output := [6]string{"aaaabccddddde", "abcd", "", `qwe45`, `qwe44444`, `qwe\\\\\`}
 
+	//test
 	for i, v := range input {
 		result := strUnpacker(v)
 
@@ -41,49 +40,62 @@ func strUnpacker(str string) string {
 	var strBuilder strings.Builder
 
 	runes := []rune(str)
+	prevType := emptyType
 
-	for i := 0; i < len(runes); i++ {
+	strBuilder.WriteRune(runes[0])
+
+	for i := 1; i < len(runes); i++ {
+
 		currentRune := runes[i]
-		if i > 0 {
-			prevRune := runes[i-1]
-			symbolType := defineRuneType(prevRune, currentRune)
-			
-			switch {
-			case symbolType == symbol || symbolType == escapeSymbol:
-				strBuilder.WriteRune(currentRune)
-			case symbolType == count:
-				countS, _ := strconv.Atoi(string(runes[i]))
-				strBuilder.WriteString(multiplyRune(prevRune, countS))	
-			}
-		} else {
+		prevRune := runes[i-1]
+		currentType := defineRuneType(prevRune, currentRune, prevType)
+		prevType = currentType
+
+		switch {
+		case currentType == symbolType || currentType == escapeSymbolType:
 			strBuilder.WriteRune(currentRune)
+
+		case currentType == countType:
+			strBuilder.WriteString(multiplyRune(prevRune, currentRune))
+
+		case currentType == errorType:
+			strBuilder.Reset()
+			break
 		}
 	}
 
 	return strBuilder.String()
 }
 
-func multiplyRune(r rune, count int) string {
+func multiplyRune(runeToMultiply rune, countRune rune) string {
 	var strBuilder strings.Builder
+	count, err := strconv.Atoi(string(countRune))
+
+	if err != nil {
+		panic("Can't convert countRune to int")
+	}
 
 	for i := 1; i < count; i++ {
-		strBuilder.WriteRune(r)
+		strBuilder.WriteRune(runeToMultiply)
 	}
 
 	return strBuilder.String()
 }
 
-func defineRuneType(prevRune rune, currentRune rune) runeType {
+func defineRuneType(prevRune rune, currentRune rune, prevType runeType) runeType {
 	isNumber := unicode.IsDigit(currentRune)
+	isPrevNumber := unicode.IsDigit(prevRune)
 
 	switch {
-	case prevRune != escapeRune && isNumber:
-		return count
+	case prevType != symbolType && isPrevNumber && isNumber:
+		return errorType
+	case (prevRune != escapeRune && isNumber) || (prevType == escapeSymbolType && isNumber):
+		return countType
 	case prevRune == escapeRune && currentRune == escapeRune:
-		return escapeSymbol
+		return escapeSymbolType
 	case prevRune != escapeRune && currentRune == escapeRune:
-		return escape
+		return escapeType
 	default:
-		return symbol
+		return symbolType
 	}
 }
