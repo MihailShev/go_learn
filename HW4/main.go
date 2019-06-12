@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"log"
 	"reflect"
-
-	//"reflect"
-	//"unsafe"
 )
 
 type element struct {
@@ -94,6 +91,7 @@ func findMaxV2(slice interface{}, comparator func(elementIndex, maxElementIndex 
 	}
 }
 
+// Convert reflect value to []interface{}
 func convertValueToSlice(rv reflect.Value) ([]interface{}, error) {
 	var err error
 	var slice []interface{}
