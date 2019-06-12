@@ -40,7 +40,7 @@ func testFindMax() {
 	if err != nil {
 		log.Print(err)
 	} else {
-		fmt.Println("max element: ", maxElement)
+		fmt.Println("findMax:\t", maxElement)
 	}
 }
 
@@ -52,7 +52,7 @@ func testFindMaxV2() {
 	if err != nil {
 		log.Println(err)
 	} else {
-		fmt.Println("max element: ", maxElement)
+		fmt.Println("findMaxV2:\t", maxElement)
 	}
 }
 
@@ -98,11 +98,7 @@ func convertValueToSlice(rv reflect.Value) ([]interface{}, error) {
 
 	if rv.Kind() != reflect.Slice {
 		err = errors.New("argument slice has incorrect type")
-	} else if rv.Len() == 0 {
-		err = errors.New("slice is empty")
-	}
-
-	if err == nil {
+	} else {
 		slice = make([]interface{}, rv.Len())
 
 		for i := 0; i < rv.Len(); i++ {
