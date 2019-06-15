@@ -2,27 +2,6 @@ package main
 
 import "fmt"
 
-// Item is node of doubly linked list
-type Item struct {
-	value interface{}
-	prev  *Item
-	next  *Item
-	list *List
-}
-
-// Remove item from list
-func (item *Item) Remove() {
-	if item.prev == nil && item.next != nil {
-		item.list.first = item.next
-		item = nil
-	}
-}
-
-//Value returns item value
-func (item *Item) Value() interface{} {
-	return item.value
-}
-
 //List is doubly linked list
 type List struct {
 	length uint
@@ -32,13 +11,16 @@ type List struct {
 
 //PushFront adds an item to the end of the list
 func (list *List) PushFront(value interface{}) {
+	itemToSet := &Item{value, nil, nil, list}
+
 	switch list.length {
 	case 0:
-		list.first = &Item{value, nil, nil, list}
-		list.last = list.first
+		list.first = itemToSet
+		list.last = itemToSet
 	case 1:
-		list.last = &Item{value, list.first, nil, list}
-		list.first.next = list.last
+		itemToSet.prev = list.first
+		list.first.next = itemToSet
+		list.last = itemToSet
 	default:
 		temp := list.last
 		list.last = &Item{value, temp, nil, list}
@@ -50,16 +32,22 @@ func (list *List) PushFront(value interface{}) {
 
 //PushBack adds an item to the start of the list
 func (list *List) PushBack(value interface{}) {
+	itemToSet := &Item{value, nil, nil, list}
+
 	switch list.length {
 	case 0:
-		list.first = &Item{value, nil, nil, list}
+		list.first = itemToSet
 		list.last = list.first
+
 	case 1:
-		list.first = &Item{value, nil, list.first, list}
+		itemToSet.next = list.first
+		list.last = list.first
+		list.first = itemToSet
+
 	default:
-		temp := list.first
-		list.first = &Item{value, nil, temp, list}
-		temp.prev = list.first
+		itemToSet.next = list.first
+		itemToSet.next.prev = itemToSet
+		list.first = itemToSet
 	}
 
 	list.length++
@@ -83,10 +71,20 @@ func (list *List) Last() *Item {
 func main() {
 	list := List{}
 
-	list.PushBack(1)
-	list.PushBack(2)
-	list.PushBack(3)
-	list.PushBack(4)
+	//list.PushBack(1)
+	//list.PushBack(2)
+	//list.PushBack(3)
+	//list.PushBack(4)
+
+	list.PushFront(1)
+	list.PushFront(2)
+	list.PushFront(3)
+	list.PushFront(4)
+
+	last := list.last
+	fmt.Println("remove", last.prev.Value())
+	fmt.Println("remove", last.next)
+	last.Remove()
 
 	fmt.Println(list.Len())
 	current := list.First()
