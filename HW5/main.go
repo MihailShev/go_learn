@@ -81,13 +81,13 @@ func main() {
 	list.PushFront(3)
 	list.PushFront(4)
 
-	last := list.last
-	fmt.Println("remove", last.prev.Value())
-	fmt.Println("remove", last.next)
-	last.Remove()
 
-	fmt.Println(list.Len())
+	fmt.Println("First value", list.First().Value())
+	list.first.Remove()
+	fmt.Println("First value", list.First().Value())
+
 	current := list.First()
+	fmt.Println("Current value", current.Value())
 
 	for current != nil {
 		fmt.Println(current.Value())

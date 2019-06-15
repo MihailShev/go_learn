@@ -1,5 +1,9 @@
 package main
 
+import "errors"
+
+const removeErrorMessage = "item is already removed from the"
+
 // Item is node of doubly linked list
 type Item struct {
 	value interface{}
@@ -24,11 +28,16 @@ func (item *Item) Prev() *Item {
 }
 
 // Remove item from list
-func (item *Item) Remove() {
+func (item *Item) Remove() error {
+	if item.list == nil {
+		return errors.New(removeErrorMessage)
+	}
+
 	switch {
 	//item is first
 	case item.prev == nil && item.next != nil:
 		item.list.first = item.next
+		item.list.first.prev = nil
 
 	//item is last
 	case item.prev !=nil && item.next == nil:
@@ -46,4 +55,7 @@ func (item *Item) Remove() {
 	}
 
 	item.list.length--
+	item.list = nil
+
+	return nil
 }
