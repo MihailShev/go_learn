@@ -1,15 +1,13 @@
-package main
+package list
 
-import "fmt"
-
-//List is doubly linked list
+// List is doubly linked list
 type List struct {
 	length uint
 	first  *Item
 	last   *Item
 }
 
-//PushFront adds an item to the end of the list
+// PushFront adds an item to the end of the list
 func (list *List) PushFront(value interface{}) {
 	itemToSet := &Item{value, nil, nil, list}
 
@@ -22,15 +20,15 @@ func (list *List) PushFront(value interface{}) {
 		list.first.next = itemToSet
 		list.last = itemToSet
 	default:
-		temp := list.last
-		list.last = &Item{value, temp, nil, list}
-		temp.next = list.last
+		itemToSet.prev = list.last
+		list.last.next = itemToSet
+		list.last = itemToSet
 	}
 
 	list.length++
 }
 
-//PushBack adds an item to the start of the list
+// PushBack adds an item to the start of the list
 func (list *List) PushBack(value interface{}) {
 	itemToSet := &Item{value, nil, nil, list}
 
@@ -53,44 +51,17 @@ func (list *List) PushBack(value interface{}) {
 	list.length++
 }
 
-//Len returns size of doubly linked list
+// Len returns length of doubly linked list
 func (list *List) Len() uint {
 	return list.length
 }
 
-//First returns first Item
+// First returns the first Item
 func (list *List) First() *Item {
 	return list.first
 }
 
-//Last returns last Item
+// Last returns the last Item
 func (list *List) Last() *Item {
 	return list.last
-}
-
-func main() {
-	list := List{}
-
-	//list.PushBack(1)
-	//list.PushBack(2)
-	//list.PushBack(3)
-	//list.PushBack(4)
-
-	list.PushFront(1)
-	list.PushFront(2)
-	list.PushFront(3)
-	list.PushFront(4)
-
-
-	fmt.Println("First value", list.First().Value())
-	list.first.Remove()
-	fmt.Println("First value", list.First().Value())
-
-	current := list.First()
-	fmt.Println("Current value", current.Value())
-
-	for current != nil {
-		fmt.Println(current.Value())
-		current = current.next
-	}
 }

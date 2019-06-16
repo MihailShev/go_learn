@@ -1,4 +1,4 @@
-package main
+package list
 
 import (
 	"fmt"
@@ -6,25 +6,29 @@ import (
 	"testing"
 )
 
-//Test Item
+// Test Item
 
 func TestItem_Value(t *testing.T) {
 	list := List{}
 
-	list.PushFront(1)
-	list.PushFront("some test value")
+	intValue := 1
+	const stringValue = "some test value"
 
-	expVal1 := 1
-	expVal2 := "some test value"
-	val1 := list.First().Value()
-	val2 := list.Last().Value()
+	list.PushFront(intValue)
+	list.PushFront(stringValue)
 
-	if expVal1 != val1 {
-		printError(t, expVal1, val1)
+	expectedInt := intValue
+	got := list.First().Value()
+
+	if expectedInt != got {
+		printError(t, expectedInt, got)
 	}
 
-	if val2 != expVal2 {
-		printError(t, expVal2, val2)
+	expectedString := stringValue
+	got = list.Last().Value()
+
+	if expectedString != got {
+		printError(t, expectedString, got)
 	}
 }
 
@@ -82,6 +86,19 @@ func TestItem_RemoveLast(t *testing.T) {
 	}
 }
 
+func TestItem_RemoveSingle(t *testing.T) {
+	list := populateList(1)
+
+	_ = list.First().Remove()
+
+	expected := ""
+	got := printListToString(*list)
+
+	if expected != got {
+		printError(t, expected, got)
+	}
+}
+
 func TestItem_Remove(t *testing.T) {
 	list := populateList(10)
 
@@ -97,10 +114,12 @@ func TestItem_Remove(t *testing.T) {
 
 func TestItem_RemoveError(t *testing.T) {
 	list := populateList(10)
-	 _ = list.First().Remove()
+	first := list.First()
 
-	got := list.First().Remove()
-	expected := removeErrorMessage
+	_ = first.Remove()
+
+	got := first.Remove()
+	expected := RemoveError
 
 	if expected != got.Error() {
 		printError(t, expected, got)
@@ -116,15 +135,20 @@ func TestList_PushBack(t *testing.T) {
 
 	expected := "1"
 	got := printListToString(list)
-	isEqualString(t, expected, got)
 
+	if expected != got {
+		printError(t, expected, got)
+	}
 
 	list.PushBack(2)
 	list.PushBack(3)
 
 	expected = "3 2 1"
 	got = printListToString(list)
-	isEqualString(t, expected, got)
+
+	if expected != got {
+		printError(t, expected, got)
+	}
 }
 
 func TestList_PushFront(t *testing.T) {
@@ -134,15 +158,20 @@ func TestList_PushFront(t *testing.T) {
 
 	expected := "1"
 	got := printListToString(list)
-	isEqualString(t, expected, got)
 
+	if expected != got {
+		printError(t, expected, got)
+	}
 
 	list.PushFront(2)
 	list.PushFront(3)
 
 	expected = "1 2 3"
 	got = printListToString(list)
-	isEqualString(t, expected, got)
+
+	if expected != got {
+		printError(t, expected, got)
+	}
 }
 
 func TestList_First(t *testing.T) {
@@ -151,7 +180,9 @@ func TestList_First(t *testing.T) {
 	expected := "1"
 	got := fmt.Sprint(list.First().Value())
 
-	isEqualString(t, expected, got)
+	if expected != got {
+		printError(t, expected, got)
+	}
 }
 
 func TestList_Last(t *testing.T) {
@@ -160,7 +191,9 @@ func TestList_Last(t *testing.T) {
 	expected := "10"
 	got := fmt.Sprint(list.Last().Value())
 
-	isEqualString(t, expected, got)
+	if expected != got {
+		printError(t, expected, got)
+	}
 }
 
 func TestList_Len(t *testing.T) {
@@ -173,6 +206,8 @@ func TestList_Len(t *testing.T) {
 		printError(t, expected, got)
 	}
 }
+
+// Utils
 
 func printListToString(list List) string {
 	var strBuilder strings.Builder
@@ -192,15 +227,7 @@ func printListToString(list List) string {
 	return strBuilder.String()
 }
 
-//Utils
-
-func isEqualString(t *testing.T, expected string, got string) {
-	if expected != got {
-		t.Error("\nExp:\n", expected, "\nGot:\n", got)
-	}
-}
-
-func printError(t *testing.T, exp interface{}, got interface{}) {
+func printError(t *testing.T, exp, got interface{}) {
 	t.Error("\nExp:\n", exp, "\nGot:\n", got)
 }
 
