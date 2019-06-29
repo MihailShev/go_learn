@@ -6,8 +6,11 @@ func Executor(taskList []Task, maxExecution, maxErr int) {
 	tasksNumber := len(taskList)
 	resultCount := 0
 
+	// limit parallel execution
 	limiter := make(chan struct{}, maxExecution)
+	// all task result
 	resultCh := make(chan interface{}, tasksNumber)
+	// only error task result
 	errCh := make(chan error, maxErr)
 
 	for _, v := range taskList {
@@ -26,7 +29,7 @@ func Executor(taskList []Task, maxExecution, maxErr int) {
 		resultCount++
 
 		if resultCount == tasksNumber || len(errCh) == maxErr {
-			close(resultCh)
+			break
 		}
 	}
 }
